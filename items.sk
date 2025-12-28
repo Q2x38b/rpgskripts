@@ -127,7 +127,7 @@ function getVoidPickaxe(theme: number) :: item:
     set {_item} to {_item} with nbt {_nbt}
 
     # Add unbreakable and hide flags
-    set unbreakable of {_item} to true
+    make {_item} unbreakable
     add all item flags to item flags of {_item}
 
     return {_item}
@@ -266,7 +266,7 @@ on break:
             loop {_bonus-drops} times:
                 drop {_drop} at {_block}
 
-function getOreDrop(blockType: block type) :: item:
+function getOreDrop(blockType: block) :: item:
     if {_blockType} is coal ore or deepslate coal ore:
         return coal
     if {_blockType} is iron ore or deepslate iron ore:
