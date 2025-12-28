@@ -122,12 +122,12 @@ function getVoidPickaxe(theme: number) :: item:
 
     # Add NBT data for identification
     set {_nbt} to nbt compound of {_item}
-    set tag "VoidPickaxe" of {_nbt} to 1
-    set tag "PickaxeTheme" of {_nbt} to {_theme}
+    set byte tag "VoidPickaxe" of {_nbt} to 1
+    set int tag "PickaxeTheme" of {_nbt} to {_theme}
     set {_item} to {_item} with nbt {_nbt}
 
     # Add unbreakable and hide flags
-    make {_item} unbreakable
+    set unbreakable of {_item} to true
     add all item flags to item flags of {_item}
 
     return {_item}
@@ -143,7 +143,7 @@ on right click:
 
     # Get current theme
     set {_nbt} to nbt compound of player's tool
-    set {_current-theme} to tag "PickaxeTheme" of {_nbt}
+    set {_current-theme} to int tag "PickaxeTheme" of {_nbt}
 
     # Cycle to next theme (0-5)
     add 1 to {_current-theme}
@@ -177,7 +177,7 @@ on right click:
     # Check cooldown
     if {void.cooldown.%player's uuid%} is set:
         set {_remaining} to difference between {void.cooldown.%player's uuid%} and now
-        set {_seconds} to {_remaining} in seconds
+        set {_seconds} to "%{_remaining}%" parsed as number
         if {_seconds} > 0:
             send action bar "&c✦ Ability on cooldown! &7(%{_seconds}%s remaining)" to player
             play sound "entity.villager.no" with volume 0.5 to player
@@ -193,7 +193,7 @@ on right click:
 
     # Get theme for particles
     set {_nbt} to nbt compound of player's tool
-    set {_theme} to tag "PickaxeTheme" of {_nbt}
+    set {_theme} to int tag "PickaxeTheme" of {_nbt}
 
     # Activation burst particles
     spawnAbilityParticles(player, {_theme})
@@ -219,18 +219,13 @@ on break:
 
     # Get theme
     set {_nbt} to nbt compound of player's tool
-    set {_theme} to tag "PickaxeTheme" of {_nbt}
+    set {_theme} to int tag "PickaxeTheme" of {_nbt}
 
     # Spawn break particles
     spawnBreakParticles(location of event-block, {_theme})
 
     # Play themed sound
     playThemeSound(player, {_theme})
-
-    # XP Multiplier (Soul Siphon)
-    if event-experience > 0:
-        set {_bonus-xp} to event-experience * ({@xp-multiplier} - 1)
-        add {_bonus-xp} to event-experience
 
     # Adjacent block breaking (if ability active)
     if {void.ability.%player's uuid%} is true:
@@ -249,7 +244,8 @@ on break:
     set {_type} to type of {_block}
 
     # List of fortune-able blocks
-    {_type} is coal ore, deepslate coal ore, iron ore, deepslate iron ore, copper ore, deepslate copper ore, gold ore, deepslate gold ore, nether gold ore, lapis lazuli ore, deepslate lapis lazuli ore, redstone ore, deepslate redstone ore, diamond ore, deepslate diamond ore, emerald ore, deepslate emerald ore, nether quartz ore, or ancient debris
+    if {_type} is not coal ore, deepslate coal ore, iron ore, deepslate iron ore, copper ore, deepslate copper ore, gold ore, deepslate gold ore, nether gold ore, lapis ore, deepslate lapis ore, redstone ore, deepslate redstone ore, diamond ore, deepslate diamond ore, emerald ore, deepslate emerald ore, nether quartz ore, or ancient debris:
+        stop
 
     # Calculate fortune bonus
     set {_fortune} to {@base-fortune}
@@ -270,7 +266,7 @@ on break:
             loop {_bonus-drops} times:
                 drop {_drop} at {_block}
 
-function getOreDrop(blockType: item type) :: item:
+function getOreDrop(blockType: block type) :: item:
     if {_blockType} is coal ore or deepslate coal ore:
         return coal
     if {_blockType} is iron ore or deepslate iron ore:
@@ -281,7 +277,7 @@ function getOreDrop(blockType: item type) :: item:
         return raw gold
     if {_blockType} is nether gold ore:
         return gold nugget
-    if {_blockType} is lapis lazuli ore or deepslate lapis lazuli ore:
+    if {_blockType} is lapis ore or deepslate lapis ore:
         return lapis lazuli
     if {_blockType} is redstone ore or deepslate redstone ore:
         return redstone
@@ -290,7 +286,7 @@ function getOreDrop(blockType: item type) :: item:
     if {_blockType} is emerald ore or deepslate emerald ore:
         return emerald
     if {_blockType} is nether quartz ore:
-        return nether quartz
+        return quartz
     return air
 
 # ═══════════════════════════════════════════════════════════════
@@ -356,7 +352,7 @@ function spawnBreakParticles(loc: location, theme: number):
             set {_offset} to location({_x} + (random number between 0 and 1), {_y} + (random number between 0 and 1), {_z} + (random number between 0 and 1), {_world})
             draw 1 of happy villager at {_offset}
             draw 1 of composter at {_offset}
-            draw 1 of spore blossom at {_offset}
+            draw 1 of warped spore at {_offset}
 
     # Theme 4: Corruption (Dark Red/Black)
     else if {_theme} is 4:
@@ -441,7 +437,7 @@ function breakAdjacentBlocks(block: block, p: player):
         set {_dir} to random element of {_directions::*}
 
         # Parse direction (simplified - break blocks around)
-        set {_adjacent} to block at location({_loc})
+        set {_adjacent} to block at {_loc}
         set {_rand-x} to random integer between -1 and 1
         set {_rand-y} to random integer between -1 and 1
         set {_rand-z} to random integer between -1 and 1
@@ -477,7 +473,7 @@ function isVoidPickaxe(item: item) :: boolean:
         return false
 
     set {_nbt} to nbt compound of {_item}
-    if tag "VoidPickaxe" of {_nbt} is 1:
+    if byte tag "VoidPickaxe" of {_nbt} is 1:
         return true
     return false
 
