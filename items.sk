@@ -1,1 +1,505 @@
+# ═══════════════════════════════════════════════════════════════
+#                    VOID FRACTURE PICKAXE
+#              Hypixel Skyblock Style Custom Pickaxe
+# ═══════════════════════════════════════════════════════════════
 
+options:
+    # Cooldown for right click ability (in seconds)
+    ability-cooldown: 25
+    # Duration of ability (in seconds)
+    ability-duration: 8
+    # Chance to break adjacent blocks (percentage)
+    adjacent-break-chance: 35
+    # Fortune boost during ability
+    ability-fortune-boost: 250
+    # Base mining fortune
+    base-fortune: 120
+    # Base mining speed
+    base-speed: 700
+    # XP multiplier
+    xp-multiplier: 3
+    # Breaking power
+    breaking-power: 12
+
+# ═══════════════════════════════════════════════════════════════
+#                      PARTICLE THEMES
+# ═══════════════════════════════════════════════════════════════
+# Theme 0: Void (Purple/Black) - Netherite
+# Theme 1: Inferno (Orange/Red) - Gold
+# Theme 2: Frost (Blue/White) - Diamond
+# Theme 3: Nature (Green/Lime) - Iron
+# Theme 4: Corruption (Dark Red/Black) - Netherite
+# Theme 5: Celestial (Yellow/White) - Gold
+
+# ═══════════════════════════════════════════════════════════════
+#                    ITEM CREATION COMMAND
+# ═══════════════════════════════════════════════════════════════
+
+command /voidpickaxe [<player>]:
+    permission: rpg.admin
+    permission message: &cYou don't have permission to use this command.
+    trigger:
+        set {_target} to arg-1 ? player
+        set {_pickaxe} to getVoidPickaxe(0)
+        give {_target} {_pickaxe}
+        send "&d&l✦ &5You received the &d&lVoid Fracture Pickaxe&5! &d&l✦" to {_target}
+        if {_target} is not player:
+            send "&aGave Void Fracture Pickaxe to %{_target}%"
+
+# ═══════════════════════════════════════════════════════════════
+#                    PICKAXE GENERATION
+# ═══════════════════════════════════════════════════════════════
+
+function getVoidPickaxe(theme: number) :: item:
+    # Set material based on theme
+    if {_theme} is 0:
+        set {_item} to netherite pickaxe
+        set {_theme-name} to "&5&lVOID"
+        set {_theme-color} to "&5"
+    else if {_theme} is 1:
+        set {_item} to golden pickaxe
+        set {_theme-name} to "&6&lINFERNO"
+        set {_theme-color} to "&6"
+    else if {_theme} is 2:
+        set {_item} to diamond pickaxe
+        set {_theme-name} to "&b&lFROST"
+        set {_theme-color} to "&b"
+    else if {_theme} is 3:
+        set {_item} to iron pickaxe
+        set {_theme-name} to "&a&lNATURE"
+        set {_theme-color} to "&a"
+    else if {_theme} is 4:
+        set {_item} to netherite pickaxe
+        set {_theme-name} to "&4&lCORRUPTION"
+        set {_theme-color} to "&4"
+    else if {_theme} is 5:
+        set {_item} to golden pickaxe
+        set {_theme-name} to "&e&lCELESTIAL"
+        set {_theme-color} to "&e"
+    else:
+        set {_item} to netherite pickaxe
+        set {_theme-name} to "&5&lVOID"
+        set {_theme-color} to "&5"
+
+    # Set display name with upgrade tiers
+    set name of {_item} to "&8[&7I&8] &8[&fII&8] &8[&6III&8] %{_theme-color}%Void Fracture Pickaxe"
+
+    # Build lore in Hypixel Skyblock style
+    set {_lore::*} to ""
+    add "&7Breaking Power: &c{@breaking-power}&4❁" to {_lore::*}
+    add "" to {_lore::*}
+    add "&7Mining Speed: &a+{@base-speed}" to {_lore::*}
+    add "&7Mining Fortune: &6+{@base-fortune}" to {_lore::*}
+    add "&7XP Multiplier: &b{@xp-multiplier}x" to {_lore::*}
+    add "" to {_lore::*}
+    add "&7Theme: %{_theme-name}%" to {_lore::*}
+    add "" to {_lore::*}
+    add "&6Ability: Seismic Fracture &e&lRIGHT CLICK" to {_lore::*}
+    add "&7Tears reality around you, granting" to {_lore::*}
+    add "&a+{@ability-fortune-boost} Mining Fortune &7and a" to {_lore::*}
+    add "&7chance to shatter &fadjacent blocks&7." to {_lore::*}
+    add "&8Cooldown: &a{@ability-cooldown}s &8Duration: &a{@ability-duration}s" to {_lore::*}
+    add "" to {_lore::*}
+    add "&5Ability: Void Resonance &d&lPASSIVE" to {_lore::*}
+    add "&7Summons ethereal particles when" to {_lore::*}
+    add "&7breaking blocks. &8(&7Shift+Right Click" to {_lore::*}
+    add "&7to cycle particle themes&8)" to {_lore::*}
+    add "" to {_lore::*}
+    add "&9Ability: Phase Walker &b&lPASSIVE" to {_lore::*}
+    add "&7Grants increased &bstep height &7and" to {_lore::*}
+    add "&7slight &fspeed boost &7while held." to {_lore::*}
+    add "" to {_lore::*}
+    add "&cAbility: Soul Siphon &4&lPASSIVE" to {_lore::*}
+    add "&7Grants &a{@xp-multiplier}x XP &7from all" to {_lore::*}
+    add "&7mining activities." to {_lore::*}
+    add "" to {_lore::*}
+    add "&8This ancient tool resonates with" to {_lore::*}
+    add "&8the void between dimensions..." to {_lore::*}
+    add "" to {_lore::*}
+    add "&d&lMYTHIC PICKAXE" to {_lore::*}
+
+    set lore of {_item} to {_lore::*}
+
+    # Add NBT data for identification
+    set {_nbt} to nbt compound of {_item}
+    set tag "VoidPickaxe" of {_nbt} to 1
+    set tag "PickaxeTheme" of {_nbt} to {_theme}
+    set {_item} to {_item} with nbt {_nbt}
+
+    # Add unbreakable and hide flags
+    make {_item} unbreakable
+    add all item flags to item flags of {_item}
+
+    return {_item}
+
+# ═══════════════════════════════════════════════════════════════
+#                    THEME CYCLING (SHIFT+RIGHT CLICK)
+# ═══════════════════════════════════════════════════════════════
+
+on right click:
+    player is sneaking
+    isVoidPickaxe(player's tool) is true
+    cancel event
+
+    # Get current theme
+    set {_nbt} to nbt compound of player's tool
+    set {_current-theme} to tag "PickaxeTheme" of {_nbt}
+
+    # Cycle to next theme (0-5)
+    add 1 to {_current-theme}
+    if {_current-theme} > 5:
+        set {_current-theme} to 0
+
+    # Get theme name for message
+    set {_theme-names::0} to "&5&lVoid"
+    set {_theme-names::1} to "&6&lInferno"
+    set {_theme-names::2} to "&b&lFrost"
+    set {_theme-names::3} to "&a&lNature"
+    set {_theme-names::4} to "&4&lCorruption"
+    set {_theme-names::5} to "&e&lCelestial"
+
+    # Replace item with new themed version
+    set player's tool to getVoidPickaxe({_current-theme})
+
+    # Effects
+    play sound "block.beacon.power_select" with volume 0.5 and pitch 1.5 to player
+    send action bar "&d✦ &7Theme changed to %{_theme-names::%{_current-theme}%}% &d✦" to player
+
+# ═══════════════════════════════════════════════════════════════
+#                    RIGHT CLICK ABILITY (SEISMIC FRACTURE)
+# ═══════════════════════════════════════════════════════════════
+
+on right click:
+    player is not sneaking
+    isVoidPickaxe(player's tool) is true
+    cancel event
+
+    # Check cooldown
+    if {void.cooldown.%player's uuid%} is set:
+        set {_remaining} to difference between {void.cooldown.%player's uuid%} and now
+        set {_seconds} to {_remaining} in seconds
+        if {_seconds} > 0:
+            send action bar "&c✦ Ability on cooldown! &7(%{_seconds}%s remaining)" to player
+            play sound "entity.villager.no" with volume 0.5 to player
+            stop
+
+    # Activate ability
+    set {void.cooldown.%player's uuid%} to {@ability-cooldown} seconds from now
+    set {void.ability.%player's uuid%} to true
+
+    # Visual and sound effects
+    play sound "entity.wither.spawn" with volume 0.3 and pitch 1.5 to player
+    play sound "block.respawn_anchor.deplete" with volume 0.5 and pitch 0.8 to player
+
+    # Get theme for particles
+    set {_nbt} to nbt compound of player's tool
+    set {_theme} to tag "PickaxeTheme" of {_nbt}
+
+    # Activation burst particles
+    spawnAbilityParticles(player, {_theme})
+
+    send title "&d&l✦ SEISMIC FRACTURE ✦" with subtitle "&7Reality bends to your will..." to player for 0.5 seconds with fade in 0.25 seconds and fade out 0.5 seconds
+    send action bar "&6&l+{@ability-fortune-boost} Fortune &8| &c&lAdjacent Break Active" to player
+
+    # Apply glowing effect
+    apply glowing to player for {@ability-duration} seconds
+
+    # End ability after duration
+    wait {@ability-duration} seconds
+    delete {void.ability.%player's uuid%}
+    send action bar "&7Seismic Fracture has ended." to player
+    play sound "block.beacon.deactivate" with volume 0.3 and pitch 1.2 to player
+
+# ═══════════════════════════════════════════════════════════════
+#                    BLOCK BREAK EFFECTS
+# ═══════════════════════════════════════════════════════════════
+
+on break:
+    isVoidPickaxe(player's tool) is true
+
+    # Get theme
+    set {_nbt} to nbt compound of player's tool
+    set {_theme} to tag "PickaxeTheme" of {_nbt}
+
+    # Spawn break particles
+    spawnBreakParticles(location of event-block, {_theme})
+
+    # Play themed sound
+    playThemeSound(player, {_theme})
+
+    # XP Multiplier (Soul Siphon)
+    if event-experience > 0:
+        set {_bonus-xp} to event-experience * ({@xp-multiplier} - 1)
+        add {_bonus-xp} to event-experience
+
+    # Adjacent block breaking (if ability active)
+    if {void.ability.%player's uuid%} is true:
+        chance of {@adjacent-break-chance}%:
+            breakAdjacentBlocks(event-block, player)
+
+# ═══════════════════════════════════════════════════════════════
+#                    FORTUNE HANDLER
+# ═══════════════════════════════════════════════════════════════
+
+on break:
+    isVoidPickaxe(player's tool) is true
+
+    # Check if block drops items that can be fortuned
+    set {_block} to event-block
+    set {_type} to type of {_block}
+
+    # List of fortune-able blocks
+    {_type} is coal ore, deepslate coal ore, iron ore, deepslate iron ore, copper ore, deepslate copper ore, gold ore, deepslate gold ore, nether gold ore, lapis lazuli ore, deepslate lapis lazuli ore, redstone ore, deepslate redstone ore, diamond ore, deepslate diamond ore, emerald ore, deepslate emerald ore, nether quartz ore, or ancient debris
+
+    # Calculate fortune bonus
+    set {_fortune} to {@base-fortune}
+    if {void.ability.%player's uuid%} is true:
+        add {@ability-fortune-boost} to {_fortune}
+
+    # Fortune calculation (simplified - each 100 fortune = roughly 1 extra drop)
+    set {_bonus-drops} to floor({_fortune} / 100)
+    set {_extra-chance} to mod({_fortune}, 100)
+
+    chance of {_extra-chance}%:
+        add 1 to {_bonus-drops}
+
+    # Drop extra items
+    if {_bonus-drops} > 0:
+        set {_drop} to getOreDrop({_type})
+        if {_drop} is set:
+            loop {_bonus-drops} times:
+                drop {_drop} at {_block}
+
+function getOreDrop(blockType: item type) :: item:
+    if {_blockType} is coal ore or deepslate coal ore:
+        return coal
+    if {_blockType} is iron ore or deepslate iron ore:
+        return raw iron
+    if {_blockType} is copper ore or deepslate copper ore:
+        return raw copper
+    if {_blockType} is gold ore or deepslate gold ore:
+        return raw gold
+    if {_blockType} is nether gold ore:
+        return gold nugget
+    if {_blockType} is lapis lazuli ore or deepslate lapis lazuli ore:
+        return lapis lazuli
+    if {_blockType} is redstone ore or deepslate redstone ore:
+        return redstone
+    if {_blockType} is diamond ore or deepslate diamond ore:
+        return diamond
+    if {_blockType} is emerald ore or deepslate emerald ore:
+        return emerald
+    if {_blockType} is nether quartz ore:
+        return nether quartz
+    return air
+
+# ═══════════════════════════════════════════════════════════════
+#                    PASSIVE ABILITIES
+# ═══════════════════════════════════════════════════════════════
+
+# Mining Speed (Haste) and Phase Walker passives
+every 1 tick:
+    loop all players:
+        if isVoidPickaxe(loop-player's tool) is true:
+            # Mining Speed - Haste 3 gives significant speed boost
+            apply haste 3 to loop-player for 2 ticks
+
+            # Phase Walker - Step height and speed
+            apply speed 1 to loop-player for 2 ticks
+
+            # Step height using attribute (jump boost as alternative)
+            apply jump boost 1 to loop-player for 2 ticks
+        else:
+            # Remove night vision indicator if they had the pick
+            remove haste from loop-player
+
+# ═══════════════════════════════════════════════════════════════
+#                    PARTICLE FUNCTIONS
+# ═══════════════════════════════════════════════════════════════
+
+function spawnBreakParticles(loc: location, theme: number):
+    set {_x} to x-coordinate of {_loc}
+    set {_y} to y-coordinate of {_loc}
+    set {_z} to z-coordinate of {_loc}
+    set {_world} to world of {_loc}
+
+    # Center location
+    set {_center} to location({_x} + 0.5, {_y} + 0.5, {_z} + 0.5, {_world})
+
+    # Theme 0: Void (Purple/Black)
+    if {_theme} is 0:
+        loop 15 times:
+            set {_offset} to location({_x} + (random number between 0 and 1), {_y} + (random number between 0 and 1), {_z} + (random number between 0 and 1), {_world})
+            draw 1 of dragon breath at {_offset}
+            draw 1 of portal at {_offset}
+            draw 1 of witch at {_offset}
+
+    # Theme 1: Inferno (Orange/Red)
+    else if {_theme} is 1:
+        loop 15 times:
+            set {_offset} to location({_x} + (random number between 0 and 1), {_y} + (random number between 0 and 1), {_z} + (random number between 0 and 1), {_world})
+            draw 1 of flame at {_offset}
+            draw 1 of lava at {_offset}
+            draw 1 of smoke at {_offset}
+
+    # Theme 2: Frost (Blue/White)
+    else if {_theme} is 2:
+        loop 15 times:
+            set {_offset} to location({_x} + (random number between 0 and 1), {_y} + (random number between 0 and 1), {_z} + (random number between 0 and 1), {_world})
+            draw 1 of snowflake at {_offset}
+            draw 1 of cloud at {_offset}
+            draw 1 of end rod at {_offset}
+
+    # Theme 3: Nature (Green/Lime)
+    else if {_theme} is 3:
+        loop 15 times:
+            set {_offset} to location({_x} + (random number between 0 and 1), {_y} + (random number between 0 and 1), {_z} + (random number between 0 and 1), {_world})
+            draw 1 of happy villager at {_offset}
+            draw 1 of composter at {_offset}
+            draw 1 of spore blossom at {_offset}
+
+    # Theme 4: Corruption (Dark Red/Black)
+    else if {_theme} is 4:
+        loop 15 times:
+            set {_offset} to location({_x} + (random number between 0 and 1), {_y} + (random number between 0 and 1), {_z} + (random number between 0 and 1), {_world})
+            draw 1 of damage indicator at {_offset}
+            draw 1 of crimson spore at {_offset}
+            draw 1 of soul at {_offset}
+
+    # Theme 5: Celestial (Yellow/White)
+    else if {_theme} is 5:
+        loop 15 times:
+            set {_offset} to location({_x} + (random number between 0 and 1), {_y} + (random number between 0 and 1), {_z} + (random number between 0 and 1), {_world})
+            draw 1 of end rod at {_offset}
+            draw 1 of firework at {_offset}
+            draw 1 of glow at {_offset}
+
+function spawnAbilityParticles(p: player, theme: number):
+    set {_loc} to location of {_p}
+
+    # Spiral burst effect
+    loop 36 times:
+        set {_angle} to loop-number * 10
+        set {_rad} to {_angle} * 3.14159 / 180
+        set {_x} to 2 * cos({_rad})
+        set {_z} to 2 * sin({_rad})
+        set {_y} to loop-number / 12
+
+        set {_particle-loc} to location of {_p}
+        add {_x} to x-coordinate of {_particle-loc}
+        add {_y} to y-coordinate of {_particle-loc}
+        add {_z} to z-coordinate of {_particle-loc}
+
+        if {_theme} is 0:
+            draw 3 of dragon breath at {_particle-loc}
+            draw 2 of portal at {_particle-loc}
+        else if {_theme} is 1:
+            draw 3 of flame at {_particle-loc}
+            draw 2 of lava at {_particle-loc}
+        else if {_theme} is 2:
+            draw 3 of snowflake at {_particle-loc}
+            draw 2 of end rod at {_particle-loc}
+        else if {_theme} is 3:
+            draw 3 of happy villager at {_particle-loc}
+            draw 2 of composter at {_particle-loc}
+        else if {_theme} is 4:
+            draw 3 of damage indicator at {_particle-loc}
+            draw 2 of soul at {_particle-loc}
+        else if {_theme} is 5:
+            draw 3 of end rod at {_particle-loc}
+            draw 2 of firework at {_particle-loc}
+
+function playThemeSound(p: player, theme: number):
+    if {_theme} is 0:
+        play sound "block.amethyst_block.chime" with volume 0.2 and pitch 0.8 to {_p}
+    else if {_theme} is 1:
+        play sound "block.fire.ambient" with volume 0.2 and pitch 1.2 to {_p}
+    else if {_theme} is 2:
+        play sound "block.amethyst_block.chime" with volume 0.2 and pitch 1.5 to {_p}
+    else if {_theme} is 3:
+        play sound "block.azalea_leaves.break" with volume 0.3 and pitch 1.2 to {_p}
+    else if {_theme} is 4:
+        play sound "block.soul_sand.break" with volume 0.2 and pitch 0.6 to {_p}
+    else if {_theme} is 5:
+        play sound "block.amethyst_block.chime" with volume 0.2 and pitch 1.8 to {_p}
+
+# ═══════════════════════════════════════════════════════════════
+#                    ADJACENT BLOCK BREAKING
+# ═══════════════════════════════════════════════════════════════
+
+function breakAdjacentBlocks(block: block, p: player):
+    set {_loc} to location of {_block}
+    set {_world} to world of {_block}
+
+    # Get all adjacent blocks (6 directions)
+    set {_directions::*} to (1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), and (0, 0, -1)
+
+    # Pick 1-3 random adjacent blocks to break
+    set {_count} to random integer between 1 and 3
+
+    loop {_count} times:
+        set {_dir} to random element of {_directions::*}
+
+        # Parse direction (simplified - break blocks around)
+        set {_adjacent} to block at location({_loc})
+        set {_rand-x} to random integer between -1 and 1
+        set {_rand-y} to random integer between -1 and 1
+        set {_rand-z} to random integer between -1 and 1
+
+        set {_adj-loc} to location(x-coordinate of {_loc} + {_rand-x}, y-coordinate of {_loc} + {_rand-y}, z-coordinate of {_loc} + {_rand-z}, {_world})
+        set {_adj-block} to block at {_adj-loc}
+
+        # Don't break air or bedrock
+        if {_adj-block} is not air:
+            if {_adj-block} is not bedrock:
+                # Spawn crack particles
+                spawnCrackParticles({_adj-loc})
+
+                # Break the block naturally
+                break {_adj-block} naturally using diamond pickaxe
+
+                # Sound effect
+                play sound "entity.generic.explode" with volume 0.2 and pitch 1.5 at {_adj-loc}
+
+function spawnCrackParticles(loc: location):
+    draw 10 of crit at {_loc}
+    draw 5 of explosion at {_loc}
+    draw 8 of enchanted hit at {_loc}
+
+# ═══════════════════════════════════════════════════════════════
+#                    UTILITY FUNCTIONS
+# ═══════════════════════════════════════════════════════════════
+
+function isVoidPickaxe(item: item) :: boolean:
+    if {_item} is not set:
+        return false
+    if {_item} is air:
+        return false
+
+    set {_nbt} to nbt compound of {_item}
+    if tag "VoidPickaxe" of {_nbt} is 1:
+        return true
+    return false
+
+# ═══════════════════════════════════════════════════════════════
+#                    CLEANUP ON QUIT
+# ═══════════════════════════════════════════════════════════════
+
+on quit:
+    delete {void.ability.%player's uuid%}
+    delete {void.cooldown.%player's uuid%}
+
+# ═══════════════════════════════════════════════════════════════
+#                    PREVENT ITEM DAMAGE
+# ═══════════════════════════════════════════════════════════════
+
+on item damage:
+    isVoidPickaxe(event-item) is true
+    cancel event
+
+# ═══════════════════════════════════════════════════════════════
+#                    RELOAD MESSAGE
+# ═══════════════════════════════════════════════════════════════
+
+on script load:
+    broadcast "&d&l✦ &5Void Fracture Pickaxe &d&lLoaded! &5Use /voidpickaxe to obtain."
